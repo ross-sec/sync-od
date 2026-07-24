@@ -1,4 +1,4 @@
-# @ross_technologies/sync-od
+# @ross-sec/sync-od
 
 Sync any codebase to your self-hosted [Open Design](https://open-design.ross-developers.com) MCP
 AND/OR extract its design system. Script-driven, adversarial grading, bidirectional sync with
@@ -28,7 +28,7 @@ managed blocks.
 # Add to your OpenCode config
 # opencode.json
 {
-  "plugin": ["@ross_technologies/sync-od"]
+  "plugin": ["@ross-sec/sync-od"]
 }
 ```
 
