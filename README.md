@@ -2,19 +2,24 @@
   <img src="https://raw.githubusercontent.com/ross-sec/ross-sec/main/assets/header.svg" alt="Ross Technologies" width="100%">
 </p>
 
+<h1 align="center">Sync With Open Design</h1>
+
 <p align="center">
-  <a href="https://www.npmjs.com/package/@ross-sec/sync-od"><img src="https://img.shields.io/npm/v/@ross-sec/sync-od?style=flat-square&color=0ea5e9&label=npm%20version" alt="npm version"></a>
-  <a href="https://github.com/ross-sec/sync-od/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="license: MIT"></a>
-  <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D20-brightgreen?style=flat-square" alt="node >=20"></a>
-  <a href="https://open-design.ai"><img src="https://img.shields.io/badge/Open%20Design-compatible-7c3aed?style=flat-square" alt="Open Design"></a>
-  <a href="https://github.com/ross-sec/sync-od"><img src="https://img.shields.io/badge/GitHub-ross--sec%2Fsync--od-181717?style=flat-square&logo=github" alt="GitHub"></a>
+  <strong>Sync any codebase to <a href="https://open-design.ai">Open Design</a> and/or extract its design system.</strong><br>
+  Script-driven, adversarial grading, bidirectional sync with managed blocks.
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/@ross-sec/sync-od"><img src="https://img.shields.io/npm/v/@ross-sec/sync-od?style=flat-square&color=2891e2&label=npm%20version" alt="npm version"></a>
+  <a href="https://github.com/ross-sec/sync-od/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-2891e2?style=flat-square" alt="license: MIT"></a>
+  <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D20-2891e2?style=flat-square" alt="node >=20"></a>
+  <a href="https://open-design.ai"><img src="https://img.shields.io/badge/Open%20Design-compatible-2891e2?style=flat-square" alt="Open Design"></a>
+  <a href="https://github.com/ross-sec/sync-od"><img src="https://img.shields.io/badge/GitHub-ross--sec%2Fsync--od-2891e2?style=flat-square&logo=github" alt="GitHub"></a>
 </p>
 
 ---
 
 ## What it does
-
-Sync any codebase to [Open Design](https://open-design.ai) and/or extract its design system. Script-driven, adversarial grading, bidirectional sync with managed blocks.
 
 | Mode | What happens |
 |------|-------------|
@@ -127,7 +132,6 @@ All scripts live in `scripts/` and are run by the agent (never by the plugin dir
 ---
 
 <p align="center">
-  <a href="https://github.com/ross-sec/sync-od/blob/main/LICENSE"><img src="https://raw.githubusercontent.com/ross-sec/ross-sec/main/assets/connect-email.svg" alt="Email"></a>
   <a href="https://ross-developers.com/"><img src="https://raw.githubusercontent.com/ross-sec/ross-sec/main/assets/connect-website.svg" alt="Website"></a>
   <a href="https://github.com/ross-sec"><img src="https://raw.githubusercontent.com/ross-sec/ross-sec/main/assets/badge-github.svg" alt="GitHub"></a>
 </p>
