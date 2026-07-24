@@ -1,8 +1,6 @@
 # @ross-sec/sync-od
 
-Sync any codebase to your self-hosted [Open Design]([https://open-design.ross-developers.com](https://github.com/nexu-io/open-design)) MCP
-AND/OR extract its design system. Script-driven, adversarial grading, bidirectional sync with
-managed blocks.
+Sync any codebase to [Open Design](https://open-design.ai) and/or extract its design system. Script-driven, adversarial grading, bidirectional sync with managed blocks.
 
 ## What it does
 
