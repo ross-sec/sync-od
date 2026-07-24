@@ -1,4 +1,4 @@
-# open-design-sync — Chain-of-Thought task tree
+# sync-od — Chain-of-Thought task tree
 
 For each phase: the question the agent asks itself, the check it runs, and the branch it takes. Walk this
 top-to-bottom, ONE task at a time, never ending the turn mid-run (`references/self-management.md`).

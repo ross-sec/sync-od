@@ -21,7 +21,7 @@ const swatches = (o) => Object.entries(o.color || {}).map(([k, v]) => `- \`--${k
 const md = `# ${name}
 ${headerSlot}
 > Category: Generated
-> Extracted by open-design-sync. Accent-as-material dark+light system.
+> Extracted by sync-od. Accent-as-material dark+light system.
 
 ## Color Palette & Roles
 ### Light (bright)

@@ -1,4 +1,4 @@
-// open-design-sync — decision diamonds: what to build, and which way to sync
+// sync-od — decision diamonds: what to build, and which way to sync
 // render: dot -Tsvg decision-tree.dot -o decision-tree.svg
 digraph ods_decisions {
   rankdir=TB;

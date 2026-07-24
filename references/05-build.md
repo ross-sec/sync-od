@@ -25,7 +25,7 @@ built-ins only. `.ds-sync/` and `od-bundle/` are gitignored (00-bootstrap wrote 
 5. OD-safe renders every `.html` (css inlined from disk when a `--base`/cached `rawBase` exists; external
    scripts stripped; `ODS_RUNTIME` injected) and ensures each page's FIRST line is
    `<!-- @odsCard page="<rel>" -->`.
-6. Emits `_ods_needs_recompile` (exact bytes `{"by":"open-design-sync"}`), `.ods-build-meta.json`, then
+6. Emits `_ods_needs_recompile` (exact bytes `{"by":"sync-od"}`), `.ods-build-meta.json`, then
    `_ods_sync.json` **last** (renderHashes / sourceKeys / sourceHashes / styleSha / tokensSha via
    `_hashes.js` — never fork it).
 7. Deletes any prior `.sync-diff.json`.

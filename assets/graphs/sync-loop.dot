@@ -1,4 +1,4 @@
-// open-design-sync — the ongoing push/pull/drift re-anchor loop (both ways)
+// sync-od — the ongoing push/pull/drift re-anchor loop (both ways)
 // render: dot -Tsvg sync-loop.dot -o sync-loop.svg
 digraph ods_sync_loop {
   rankdir=LR;

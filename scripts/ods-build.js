@@ -9,7 +9,7 @@ import { KEY_RECIPE, canonical, renderHashFor, sourceKeyFor, sourceHashesFor, st
 import { odSafe, ensureCardMarker } from './ods-render.js';
 import { copyTree, PLACEHOLDER } from './ods-push.js';
 
-const GENERATOR = 'open-design-sync@0.2.0';
+const GENERATOR = 'sync-od@0.1.4';
 const arg = (k) => { const i = process.argv.indexOf(k); return i > -1 ? process.argv[i + 1] : null; };
 const fail = (msg) => { console.error(msg); process.exit(1); };
 
@@ -68,7 +68,7 @@ for (const f of files) {
 pages.sort();
 
 // 6. sentinel (exact bytes) + meta, then the sidecar ABSOLUTELY LAST
-writeText(join(out, '_ods_needs_recompile'), '{"by":"open-design-sync"}');
+writeText(join(out, '_ods_needs_recompile'), '{"by":"sync-od"}');
 const signals = readJSON(signalsPath, {}) || {};
 const shape = cfg.shape || signals.shape || (existsSync(join(root, 'index.html')) ? 'static' : 'app');
 writeJSON(join(out, '.ods-build-meta.json'), { project: cfg.projectName, shape, pageCount: pages.length, generator: GENERATOR });

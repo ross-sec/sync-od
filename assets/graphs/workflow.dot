@@ -1,4 +1,4 @@
-// open-design-sync — phase pipeline (forward: codebase -> Open Design)
+// sync-od — phase pipeline (forward: codebase -> Open Design)
 // render: dot -Tsvg workflow.dot -o workflow.svg
 digraph ods_workflow {
   rankdir=TB;

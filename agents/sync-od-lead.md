@@ -1,5 +1,5 @@
 ---
-description: "Lead open-design-sync orchestrator — creates an Open Design design system AND/OR project from a codebase and syncs both ways. Runs the pipeline autonomously using the skill's bundled scripts."
+description: "Lead sync-od orchestrator — creates an Open Design design system AND/OR project from a codebase and syncs both ways. Runs the pipeline autonomously using the skill's bundled scripts."
 mode: subagent
 tools: read, write, edit, bash, glob, grep
 ---

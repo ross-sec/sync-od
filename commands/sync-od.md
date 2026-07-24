@@ -2,7 +2,7 @@
 description: Sync current codebase to Open Design — extract tokens, push files, pull edits
 ---
 
-Use the open-design-sync skill to sync the current project to Open Design. Follow the skill's pipeline:
+Use the x skill to sync the current project to Open Design. Follow the skill's pipeline:
 
 1. **Detect** — run `node .ds-sync/ods-detect.js` to identify the project type and existing design state
 2. **Extract** — run `node .ds-sync/ods-extract-tokens.js` to pull design tokens (colors, fonts, spacing) from the codebase
