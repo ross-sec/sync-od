@@ -1,50 +1,77 @@
-# @ross-sec/sync-od
+<p align="center">
+  <img src="https://raw.githubusercontent.com/ross-sec/ross-sec/main/assets/header.svg" alt="Ross Technologies" width="100%">
+</p>
 
-Sync any codebase to [Open Design](https://open-design.ai) and/or extract its design system. Script-driven, adversarial grading, bidirectional sync with managed blocks.
+<p align="center">
+  <a href="https://www.npmjs.com/package/@ross-sec/sync-od"><img src="https://img.shields.io/npm/v/@ross-sec/sync-od?style=flat-square&color=0ea5e9&label=npm%20version" alt="npm version"></a>
+  <a href="https://github.com/ross-sec/sync-od/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="license: MIT"></a>
+  <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D20-brightgreen?style=flat-square" alt="node >=20"></a>
+  <a href="https://open-design.ai"><img src="https://img.shields.io/badge/Open%20Design-compatible-7c3aed?style=flat-square" alt="Open Design"></a>
+  <a href="https://github.com/ross-sec/sync-od"><img src="https://img.shields.io/badge/GitHub-ross--sec%2Fsync--od-181717?style=flat-square&logo=github" alt="GitHub"></a>
+</p>
+
+---
 
 ## What it does
 
-- **Mode A — Project sync.** Turn a codebase into an OD project: build `od-bundle/` OD-safe pages,
-  upload, grade, keep in sync.
-- **Mode B — Design system sync.** Extract the design system: `DESIGN.md` + tokens (light + dark).
-- **Both** (default). Mode B then Mode A.
+Sync any codebase to [Open Design](https://open-design.ai) and/or extract its design system. Script-driven, adversarial grading, bidirectional sync with managed blocks.
+
+| Mode | What happens |
+|------|-------------|
+| **A — Project sync** | Turn a codebase into an OD project: build `od-bundle/` OD-safe pages, upload, grade, keep in sync |
+| **B — Design system sync** | Extract the design system: `DESIGN.md` + tokens (light + dark) |
+| **Both** (default) | Mode B then Mode A |
+
+---
 
 ## Features
 
-- 18 bundled scripts that handle the mechanical work (detect, extract, build, validate, grade, upload)
-- Adversarial 5-axis grading rubric (THEME / RTL / FIDELITY / COMPLETENESS / POLISH)
-- Bidirectional sync via managed blocks (pull designer edits back safely)
-- Secret guard hook (prevents secret-bearing content from reaching OD)
-- Drift detection (logs when tracked files are edited)
-- Subagent support (lead / worker / extractor agents)
+| Feature | Description |
+|---------|-------------|
+| 18 bundled scripts | Detect, extract, build, validate, grade, upload — all automated |
+| Adversarial grading | 5-axis rubric: THEME / RTL / FIDELITY / COMPLETENESS / POLISH |
+| Bidirectional sync | Pull designer edits back safely via managed blocks |
+| Secret guard | Blocks secret-bearing content from reaching OD |
+| Drift detection | Logs when tracked files are edited |
+| Subagent support | Lead / worker / extractor agents |
+
+---
 
 ## Install
 
-### From npm
+### npm
 
-```bash
-# Add to your OpenCode config
-# opencode.json
+```jsonc
+// opencode.json
 {
   "plugin": ["@ross-sec/sync-od"]
 }
 ```
 
+### GitHub Packages
+
+```bash
+echo "@ross-sec:registry=https://npm.pkg.github.com" >> .npmrc
+npm install @ross-sec/sync-od
+```
+
 ### Local development
 
 ```bash
-cd plugins/sync-od
+git clone https://github.com/ross-sec/sync-od.git
+cd sync-od
 npm install
 npm run build
 ```
 
-Then reference the local path in your OpenCode config:
-
-```json
+```jsonc
+// opencode.json
 {
-  "plugin": ["./plugins/sync-od"]
+  "plugin": ["./path/to/sync-od"]
 }
 ```
+
+---
 
 ## Usage
 
@@ -56,9 +83,7 @@ sync this project to Open Design
 create an OD design system for this repo
 ```
 
-The plugin provides:
-- **Hooks:** Secret guard (blocks secrets in edit/write/bash) and drift detection (logs file edits)
-- **Skill:** Full SKILL.md with references, scripts, and agent definitions
+---
 
 ## Plugin hooks
 
@@ -66,6 +91,8 @@ The plugin provides:
 |------|---------|
 | `tool.execute.before` | Secret guard — blocks secret-bearing content from being synced |
 | `file.edited` | Drift detection — logs edits to tracked design-sync files |
+
+---
 
 ## Scripts
 
@@ -86,6 +113,23 @@ All scripts live in `scripts/` and are run by the agent (never by the plugin dir
 | `ods-manifest.js` | Track src↔od pairs |
 | `ods-pull.js` | Pull designer edits |
 
-## License
+---
 
-MIT © Andre Ross / Ross Technologies
+## Links
+
+| Platform | Link | Description |
+|----------|------|-------------|
+| npm | [@ross-sec/sync-od](https://www.npmjs.com/package/@ross-sec/sync-od) | Public package |
+| GitHub Packages | [ross-sec/sync-od](https://github.com/ross-sec/sync-od/packages) | GitHub mirror |
+| Open Design | [open-design.ai](https://open-design.ai) | The design workspace |
+| Skills Hub | [skills.ross-developers.com](https://skills.ross-developers.com/) | Ross Technologies skills |
+
+---
+
+<p align="center">
+  <a href="https://github.com/ross-sec/sync-od/blob/main/LICENSE"><img src="https://raw.githubusercontent.com/ross-sec/ross-sec/main/assets/connect-email.svg" alt="Email"></a>
+  <a href="https://ross-developers.com/"><img src="https://raw.githubusercontent.com/ross-sec/ross-sec/main/assets/connect-website.svg" alt="Website"></a>
+  <a href="https://github.com/ross-sec"><img src="https://raw.githubusercontent.com/ross-sec/ross-sec/main/assets/badge-github.svg" alt="GitHub"></a>
+</p>
+
+<p align="center"><em>MIT © Andre Ross / Ross Technologies</em></p>
