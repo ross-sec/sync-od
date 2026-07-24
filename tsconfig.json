@@ -11,8 +11,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": false
+    "isolatedModules": false,
+    "noEmit": false,
+    "allowSyntheticDefaultImports": true
   },
   "include": ["index.ts"],
   "exclude": ["node_modules", "dist", "test", "scripts", "agents"]
