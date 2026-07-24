@@ -1,0 +1,64 @@
+{
+  "name": "@ross_technologies/sync-od",
+  "version": "0.1.0",
+  "description": "Sync any codebase to your self-hosted Open Design MCP AND/OR extract its design system. Script-driven, adversarial grading, bidirectional sync with managed blocks.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./plugin": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "SKILL.md",
+    "references",
+    "scripts",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "node esbuild.config.mjs && tsc --emitDeclarationOnly --declaration --outDir dist",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ross-sec/skills-dev.git",
+    "directory": "plugins/sync-od"
+  },
+  "homepage": "https://skills.ross-developers.com",
+  "bugs": {
+    "url": "https://github.com/ross-sec/skills-dev/issues"
+  },
+  "keywords": [
+    "opencode",
+    "open-design",
+    "design-system",
+    "sync",
+    "design-tokens",
+    "figma",
+    "ui-sync",
+    "opencode-plugin"
+  ],
+  "author": "Andre Ross <devops.ross@gmail.com> (https://ross-developers.com)",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@opencode-ai/plugin": "latest",
+    "@types/node": "^26.1.1",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.7.0"
+  }
+}

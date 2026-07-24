@@ -1,0 +1,7 @@
+node_modules/
+test/
+.reference-private/
+design-sync/
+dist/
+*.tgz
+.env
