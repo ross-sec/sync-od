@@ -1,15 +1,17 @@
 import type { Plugin } from "@opencode-ai/plugin"
+import { tool } from "@opencode-ai/plugin"
 import { readFileSync, existsSync, appendFileSync } from "node:fs"
 import { join } from "node:path"
+import { z } from "zod"
 
 /**
  * sync-od — OpenDesign Sync Plugin for OpenCode
  *
- * Syncs any codebase to your self-hosted Open Design MCP AND/OR extracts
+ * Syncs any codebase to Open Design AND/OR extracts
  * its design system. Script-driven, adversarial grading, bidirectional
  * sync with managed blocks.
  *
- * @see https://skills.ross-developers.com
+ * @see https://open-design.ai
  */
 const SyncOd: Plugin = async ({ project, directory, worktree, $, client }) => {
   // Log initialization
@@ -23,6 +25,67 @@ const SyncOd: Plugin = async ({ project, directory, worktree, $, client }) => {
   })
 
   return {
+    // ─── /sync-od command ───
+    tool: {
+      "sync-od": tool({
+        description:
+          "Sync a codebase to Open Design and/or extract its design system. " +
+          "Modes: 'project' (sync codebase to OD), 'design-system' (extract DESIGN.md + tokens), " +
+          "'both' (default — design system first, then project sync).",
+        args: {
+          mode: z
+            .enum(["project", "design-system", "both"])
+            .optional()
+            .describe("Sync mode (default: both)"),
+          target: z
+            .string()
+            .optional()
+            .describe("Target directory or project name in Open Design"),
+        },
+        async execute(args, ctx) {
+          const mode = args.mode ?? "both"
+          const target = args.target ?? "current-project"
+
+          // Check for .design-sync directory
+          const designSyncDir = join(directory, ".design-sync")
+          const hasDesignSync = existsSync(designSyncDir)
+
+          // Check for OD project registration
+          const manifestPath = join(designSyncDir, "manifest.json")
+          const hasManifest = existsSync(manifestPath)
+
+          let result = `## sync-od — ${mode} mode\n\n`
+          result += `**Directory:** \`${directory}\`\n`
+          result += `**Target:** \`${target}\`\n`
+          result += `**.design-sync:** ${hasDesignSync ? "initialized" : "not found — run `ods-init.js` first"}\n`
+          result += `**Manifest:** ${hasManifest ? "found" : "not found"}\n\n`
+
+          if (mode === "project" || mode === "both") {
+            result += "### Project Sync\n"
+            result += "1. Run `node scripts/ods-detect.js` to detect stack\n"
+            result += "2. Run `node scripts/ods-build.js` to build OD-safe bundle\n"
+            result += "3. Run `node scripts/ods-validate.js` to validate\n"
+            result += "4. Run `node scripts/ods-upload-plan.js` to plan upload\n"
+            result += "5. Upload artifacts to Open Design\n\n"
+          }
+
+          if (mode === "design-system" || mode === "both") {
+            result += "### Design System Sync\n"
+            result += "1. Run `node scripts/ods-extract-tokens.js` to extract tokens\n"
+            result += "2. Run `node scripts/ods-build-design-system.js` to build DESIGN.md\n"
+            result += "3. Upload design system to Open Design\n\n"
+          }
+
+          result += "**Next steps:** Execute the scripts above in order. The agent will handle the workflow.\n"
+
+          return {
+            title: `sync-od: ${mode}`,
+            output: result,
+          }
+        },
+      }),
+    },
+
     // ─── Secret guard (replaces hooks/ods-guard.mjs) ───
     // Blocks secret-bearing content from being synced to Open Design
     "tool.execute.before": async (input, output) => {
