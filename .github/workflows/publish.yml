@@ -1,0 +1,103 @@
+name: Publish @ross-sec/sync-od
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'plugins/sync-od/**'
+      - '.github/workflows/publish-sync-od.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: plugins/sync-od
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get version from package.json
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+  publish:
+    needs: version
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: plugins/sync-od
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+          scope: '@ross-sec'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Run tests
+        run: npm test
+
+      - name: Publish to npmjs.org
+        run: npm publish --access=public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Configure GitHub Packages registry
+        run: npm config set //npm.pkg.github.com/:_authToken ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to GitHub Packages
+        run: npm publish --registry=https://npm.pkg.github.com --access=public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: success()
+        with:
+          tag_name: sync-od@v${{ needs.version.outputs.version }}
+          name: sync-od v${{ needs.version.outputs.version }}
+          body: |
+            ## sync-od v${{ needs.version.outputs.version }}
+
+            Sync any codebase to your self-hosted Open Design MCP AND/OR extract its design system.
+
+            **Install:**
+            ```bash
+            npm i @ross-sec/sync-od
+            ```
+
+            **Usage:**
+            ```jsonc
+            // opencode.json
+            { "plugin": ["@ross-sec/sync-od"] }
+            ```
+            Then run `/sync-od` in opencode.
+
+            **Changes:** See [CHANGELOG.md](https://github.com/ross-sec/sync-od/blob/main/CHANGELOG.md)
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

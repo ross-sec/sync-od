@@ -24,13 +24,15 @@
     "agents",
     "assets",
     "hooks",
+    "CHANGELOG.md",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
     "build": "node esbuild.config.mjs && tsc --emitDeclarationOnly --declaration --outDir dist",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
-    "prepublishOnly": "npm run clean && npm run build"
+    "test": "node --test test/**/*.test.js",
+    "prepublishOnly": "npm run clean && npm run build && npm test"
   },
   "publishConfig": {
     "access": "public"
