@@ -44,49 +44,60 @@
 
 ## Install
 
-### npm
-
-```jsonc
-// opencode.json
-{
-  "plugin": ["@ross-sec/sync-od"]
-}
-```
-
-### GitHub Packages
+### Global (recommended — available everywhere)
 
 ```bash
-echo "@ross-sec:registry=https://npm.pkg.github.com" >> .npmrc
-npm install @ross-sec/sync-od
+opencode plugin @ross-sec/sync-od --global
 ```
 
-### Local development
+This installs to `~/.config/opencode/` and makes `/sync-od` available in **all** projects.
+
+### Per-project
 
 ```bash
-git clone https://github.com/ross-sec/sync-od.git
-cd sync-od
-npm install
-npm run build
+opencode plugin @ross-sec/sync-od
 ```
 
-```jsonc
-// opencode.json
-{
-  "plugin": ["./path/to/sync-od"]
-}
-```
+Adds to project's `.opencode/opencode.json` — only available in that project.
+
+---
+
+## Prerequisites
+
+**OpenDesign daemon MUST be running** for sync operations:
+
+- **Desktop**: Open the OpenDesign app (starts daemon on `http://127.0.0.1:7456`)
+- **Server/CLI**: `pnpm tools-dev` (from OpenDesign repo)
+
+The plugin auto-detects MCP connectivity and falls back to `od` CLI if needed.
 
 ---
 
 ## Usage
 
-Once installed, the skill triggers automatically when you ask to sync a codebase to Open Design:
+```bash
+/sync-od                    # full pipeline (both modes)
+/sync-od --mode project     # Mode A: codebase → OD project
+/sync-od --mode design-system  # Mode B: extract DESIGN.md + tokens
+/sync-od --test             # connectivity check only
+```
 
+The tool runs **Step A of RE-ANCHOR RITUAL** — executes `ods-status.js`, reports exact next phase. You run that phase's script, verify DONE-gate, flip task box, call `/sync-od` again. Loop until DONE.
+
+---
+
+## Usage
+
+Once installed, run the autonomous pipeline:
+
+```bash
+/sync-od                    # full pipeline (both modes)
+/sync-od --mode project     # Mode A only: codebase → OD project
+/sync-od --mode design-system  # Mode B only: extract DESIGN.md + tokens
+/sync-od --test             # connectivity check only
 ```
-/sync-od
-sync this project to Open Design
-create an OD design system for this repo
-```
+
+The plugin runs **Step A of RE-ANCHOR RITUAL** — executes `ods-status.js`, reports the exact next phase, then **you run that phase's script**, verify DONE-gate, flip the task box, and call `/sync-od` again. Loop until DONE.
 
 ---
 
