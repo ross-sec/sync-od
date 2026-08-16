@@ -31,7 +31,7 @@
   "scripts": {
     "build": "node esbuild.config.mjs && tsc --emitDeclarationOnly --declaration --outDir dist",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
-    "test": "node --test test/**/*.test.js",
+    "test": "node --test",
     "prepublishOnly": "npm run clean && npm run build && npm test"
   },
   "publishConfig": {
