@@ -2,6 +2,35 @@
 
 All notable changes to `@ross-sec/sync-od` are documented here.
 
+## [0.1.5] - 2026-08-16
+
+### Fixed
+
+- **`/usr/bin/od` was being mistaken for the Open Design CLI.** `findOdCli()` took the first
+  `which od` / `where od` hit on trust — but on every Mac, Linux box, WSL2 and Git Bash install that
+  is GNU coreutils' **octal dump**, which Open Design's own README warns about three times. The
+  result: `/sync-od` reported `od CLI: ✅ found at /usr/bin/od` and told the user to run `od`
+  commands against it, while the connectivity check failed with a nonsense error
+  (`od: mcp: No such file or directory`). Every candidate is now probed with `--help` and only
+  believed if it identifies as Open Design.
+- **Added a bundled-CLI fallback.** The desktop app ships its own CLI and never puts it on PATH, so
+  when nothing on PATH qualifies the plugin now looks for the app's `daemon-cli.mjs` (Windows and
+  macOS) and runs it with `ELECTRON_RUN_AS_NODE=1`.
+- **Removed a nonexistent install instruction.** The failure path advised
+  `npm install -g @open-design/cli`; no `@open-design/*` package exists on npm — every one 404s.
+  It now points at the desktop app or `pnpm tools-dev`.
+- **The publish workflow had never run once.** Its `paths` filter (`plugins/sync-od/**`) and
+  `working-directory` were copied from a monorepo layout, but this repository's root *is* the
+  package, so nothing ever matched. GitHub Packages was consequently never populated.
+- **GitHub Packages publish targeted the wrong registry.** `actions/setup-node` writes
+  `@ross-sec:registry=https://registry.npmjs.org/` into `.npmrc`, and a *scoped* mapping beats
+  `--registry`. The step now rewrites `.npmrc` first.
+- **`test/` was gitignored,** so CI had no tests to run. The 82 tests are now tracked.
+
+### Changed
+
+- README no longer claims the daemon listens on `127.0.0.1:7456`; it binds a random high port.
+
 ## [0.1.4] - 2026-07-25
 
 ### Added

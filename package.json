@@ -1,6 +1,6 @@
 {
   "name": "@ross-sec/sync-od",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Sync any codebase to your self-hosted Open Design MCP AND/OR extract its design system. Script-driven, adversarial grading, bidirectional sync with managed blocks.",
   "type": "module",
   "main": "dist/index.js",

@@ -24,39 +24,107 @@ import { z } from "zod"
 
 const execFileAsync = promisify(execFile)
 
-/** Cross-platform: detect `od` binary on PATH */
-async function findOdCli(): Promise<string | null> {
-  const cmd = process.platform === "win32" ? "where" : "which"
-  try {
-    const { stdout } = await execFileAsync(cmd, ["od"])
-    return stdout.trim().split("\n")[0] ?? null
-  } catch {
-    return null
+/** A runnable Open Design CLI: what to spawn, and what to spawn it with. */
+type OdCli = {
+  exe: string
+  /** Args that must precede the `od` subcommand. */
+  prefix: string[]
+  env: Record<string, string>
+  /** Human-readable location, for the report. */
+  label: string
+}
+
+/** The desktop app ships its own CLI; it is not installed on PATH. */
+function bundledOdCandidates(): OdCli[] {
+  const home = process.env.USERPROFILE ?? process.env.HOME ?? ""
+  const out: OdCli[] = []
+
+  if (process.platform === "win32") {
+    const root = join(process.env.LOCALAPPDATA ?? join(home, "AppData", "Local"), "Programs", "Open Design")
+    out.push({
+      exe: join(root, "Open Design.exe"),
+      prefix: [join(root, "resources", "app", "prebundled", "daemon", "daemon-cli.mjs")],
+      env: { ELECTRON_RUN_AS_NODE: "1" },
+      label: "bundled desktop CLI",
+    })
+  } else if (process.platform === "darwin") {
+    for (const root of ["/Applications/Open Design.app/Contents", join(home, "Applications/Open Design.app/Contents")]) {
+      out.push({
+        exe: join(root, "MacOS", "Open Design"),
+        prefix: [join(root, "Resources", "app", "prebundled", "daemon", "daemon-cli.mjs")],
+        env: { ELECTRON_RUN_AS_NODE: "1" },
+        label: "bundled desktop CLI",
+      })
+    }
   }
+  return out.filter((c) => existsSync(c.exe) && existsSync(c.prefix[0]))
+}
+
+/**
+ * Locate a REAL Open Design CLI.
+ *
+ * `/usr/bin/od` is GNU coreutils' octal dump, and it shadows Open Design's `od` on
+ * every Mac, Linux box, WSL2 and Git Bash install — Open Design's own README warns
+ * about the collision three times. Trusting the first PATH hit points the user at
+ * the wrong binary and reports a nonsense connectivity error, so every candidate is
+ * probed before it is believed.
+ */
+async function findOdCli(): Promise<OdCli | null> {
+  const which = process.platform === "win32" ? "where" : "which"
+  let onPath: string[] = []
+  try {
+    const { stdout } = await execFileAsync(which, ["od"])
+    onPath = stdout.trim().split(/\r?\n/).map((s) => s.trim()).filter(Boolean)
+  } catch {
+    // Nothing named `od` on PATH — the bundled CLI may still be there.
+  }
+
+  const candidates: OdCli[] = [
+    ...onPath.map((exe) => ({ exe, prefix: [] as string[], env: {}, label: exe })),
+    ...bundledOdCandidates(),
+  ]
+
+  for (const c of candidates) {
+    try {
+      const { stdout } = await execFileAsync(c.exe, [...c.prefix, "--help"], {
+        timeout: 8000,
+        env: { ...process.env, ...c.env },
+      })
+      if (/open design|od mcp|od plugin|od project/i.test(stdout)) return c
+    } catch {
+      // Not Open Design, or not runnable. Keep looking.
+    }
+  }
+  return null
 }
 
 /** Test if OD MCP server is reachable (desktop app must be running) */
-async function testMcpServer(): Promise<{ ok: boolean; detail: string }> {
-  const odPath = await findOdCli()
-  if (!odPath) {
-    return { ok: false, detail: "od CLI not found on PATH" }
+async function testMcpServer(): Promise<{ ok: boolean; detail: string; cli: OdCli | null }> {
+  const cli = await findOdCli()
+  if (!cli) {
+    return {
+      ok: false,
+      detail:
+        "Open Design CLI not found. Note that `/usr/bin/od` is coreutils' octal dump, not Open Design — " +
+        "install the desktop app, or run the daemon from source with `pnpm tools-dev`.",
+      cli: null,
+    }
   }
   try {
-    const { stdout } = await execFileAsync(odPath, ["mcp", "list"], {
+    const { stdout } = await execFileAsync(cli.exe, [...cli.prefix, "mcp", "list"], {
       timeout: 8000,
+      env: { ...process.env, ...cli.env },
     })
     const hasTools = stdout.includes("open-design") || stdout.includes("od://")
     return {
       ok: hasTools,
       detail: hasTools
-        ? "MCP server reachable"
-        : "od CLI responded but no OD tools detected — is the desktop app running?",
+        ? `MCP server reachable via ${cli.label}`
+        : "CLI responded but no OD tools detected — is the desktop app running?",
+      cli,
     }
   } catch (err: any) {
-    return {
-      ok: false,
-      detail: `od mcp list failed: ${err.message ?? err}`,
-    }
+    return { ok: false, detail: `od mcp list failed: ${err.message ?? err}`, cli }
   }
 }
 
@@ -159,13 +227,13 @@ const SyncOd: Plugin = async ({ project, directory, worktree, $, client }) => {
             result += `- **MCP server:** ✅ ${mcpResult.detail}\n`
           } else {
             result += `- **MCP server:** ❌ ${mcpResult.detail}\n`
-            const odPath = await findOdCli()
-            if (odPath) {
-              result += `- **od CLI:** ✅ found at \`${odPath}\`\n`
-              result += `- **Fallback:** Use \`od\` CLI commands directly\n`
+            if (mcpResult.cli) {
+              result += `- **od CLI:** ✅ ${mcpResult.cli.label}\n`
+              result += `- **Fallback:** run \`od\` commands through that CLI directly\n`
             } else {
-              result += `- **od CLI:** ❌ not found on PATH\n`
-              result += `- **Install:** \`npm install -g @open-design/cli\` or download from https://open-design.ai\n`
+              result += `- **od CLI:** ❌ no Open Design CLI found\n`
+              result += `- **Install:** download the desktop app from https://open-design.ai ` +
+                `(there is no \`@open-design/*\` package on npm), or run the daemon from source with \`pnpm tools-dev\`\n`
             }
           }
 

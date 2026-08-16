@@ -4,60 +4,48 @@ on:
   push:
     branches: [main]
     paths:
-      - 'plugins/sync-od/**'
-      - '.github/workflows/publish-sync-od.yml'
+      - '**'
+      - '!docs/**'
+      - '!README.md'
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 jobs:
   version:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: plugins/sync-od
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Get version from package.json
-        id: version
-        run: |
-          VERSION=$(node -p "require('./package.json').version")
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - id: version
+        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
 
   publish:
     needs: version
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: plugins/sync-od
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
           scope: '@ross-sec'
 
-      - name: Install dependencies
+      - name: Install
         run: npm ci
 
       - name: Build
         run: npm run build
 
-      - name: Run tests
+      - name: Test
         run: npm test
 
       - name: Publish to npmjs.org
@@ -65,11 +53,16 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Configure GitHub Packages registry
-        run: npm config set //npm.pkg.github.com/:_authToken ${{ secrets.GITHUB_TOKEN }}
-
+      # `setup-node` writes `@ross-sec:registry=https://registry.npmjs.org/` into
+      # .npmrc, and a SCOPED registry mapping beats `--registry`. Without replacing
+      # that line this step silently re-publishes to npmjs instead of GitHub.
       - name: Publish to GitHub Packages
-        run: npm publish --registry=https://npm.pkg.github.com --access=public
+        run: |
+          cat > .npmrc <<'EOF'
+          @ross-sec:registry=https://npm.pkg.github.com
+          //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+          EOF
+          npm publish --registry=https://npm.pkg.github.com --access=public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -82,21 +75,20 @@ jobs:
           body: |
             ## sync-od v${{ needs.version.outputs.version }}
 
-            Sync any codebase to your self-hosted Open Design MCP AND/OR extract its design system.
+            Sync any codebase to your self-hosted Open Design MCP and/or extract its
+            design system.
 
             **Install:**
             ```bash
             npm i @ross-sec/sync-od
             ```
 
-            **Usage:**
+            Then add it to `opencode.json`:
             ```jsonc
-            // opencode.json
             { "plugin": ["@ross-sec/sync-od"] }
             ```
-            Then run `/sync-od` in opencode.
 
-            **Changes:** See [CHANGELOG.md](https://github.com/ross-sec/sync-od/blob/main/CHANGELOG.md)
+            **Changes:** see [CHANGELOG.md](https://github.com/ross-sec/sync-od/blob/main/CHANGELOG.md)
           draft: false
           prerelease: false
         env:
